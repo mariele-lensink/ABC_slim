@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH -D /home/mlensink/ABC_slim/
+#SBATCH -o /home/mlensink/slurm-log/abcslim_stdout-%j.txt
+#SBATCH -e /home/mlensink/slurm-log/abcslim_stderr-%j.txt
+#SBATCH -J abc_slim
+#SBATCH -t 3-00:00:00
+#SBATCH --mem 1G #memory per task
+#SBATCH --array = 1-10000 #creates 10,000 tasks
+#SBATCH --cpus-per-task=2
+#SBATCH --account=gmonroegrp
+#SBATCH --partition=bmh
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=melensink@ucdavis.edu
+
+bash
+source ~/anaconda3/etc/profile.d/conda.sh
+# Activate your conda environment if needed
+conda activate slimsims
+
+snakemake --snakefile code/Snakefile --cores $SLURM_CPUS_PER_TASK
+
+

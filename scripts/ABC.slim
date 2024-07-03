@@ -1,0 +1,52 @@
+initialize() {
+//Build the genome (first 100 genes of chromosome 5) 
+ genes = readFile("/home/mlensink/mutationrate_analysis/github/genomeinfo/gene100.csv");
+ gene_starts = NULL;
+ gene_stops =  NULL;
+
+for (line in genes)
+ {
+ components = strsplit(line, ",");
+ gene_starts = c(gene_starts, asInteger(components[0]));
+ gene_stops = c(gene_stops, asInteger(components[1]));
+ } 
+ 
+ intergenes = readFile("/home/mlensink/mutationrate_analysis/github/genomeinfo/intergene100.csv");
+ inter_starts = NULL;
+ inter_stops =  NULL;
+
+for (line in intergenes)
+ {
+ components = strsplit(line, ",");
+ inter_starts = c(inter_starts, asInteger(components[0]));
+ inter_stops = c(inter_stops, asInteger(components[1]));
+ } 
+
+ 
+ defineConstant("L", max(gene_stops)+1);
+ initializeSLiMOptions(nucleotideBased=T); //nucleotide baseed sim
+ initializeAncestralNucleotides(randomNucleotides(L)); //sets up for a simulated AT chromosome 5
+	//Mutation types    
+    initializeMutationTypeNuc("m1", 0.5, "f", 0);        // neutral mutations 
+    initializeMutationTypeNuc("m2", 0.1, "g", gdfe, 1);  // gene deleterious (recessive)
+    initializeMutationTypeNuc("m3", 0.1, "g", idfe, 1);  // intergene deleterious 
+
+	 initializeGenomicElementType("g1", c(m1, m2), c(1-gd,gd), mmJukesCantor(gmu);  //gene mutation rate
+    initializeGenomicElementType("g2", c(m1, m3, m4), c(1-id,id), mmJukesCantor(imu); //intergene mutation rate
+ 
+	initializeGenomicElement(g1, gene_starts, gene_stops); 
+ 
+	initializeGenomicElement(g2, inter_starts, inter_stops);
+         
+   initializeRecombinationRate(1.2e-5); //setting the recombination rate, dont worry about this 
+}
+//this is where we set up the actual simulation now that we have our genetic elements set up. 
+1 late() { //at generation 1 we initialize a population of 1,000 individuals
+sim.addSubpop("p1", 1135);
+p1.setSelfingRate(0.98); //arabidopsis has a high selfing rate 
+}
+
+1000 late() { //after 10*N generations
+ g = p1.sampleIndividuals(1135).genomes; // generations = 15X the population of 1,135
+ g.outputVCF(filePath=paste('/home/mlensink/ABC_slim/data/vcf/',seed,'.vcf',sep=''), simplifyNucleotides=T); 
+ }
