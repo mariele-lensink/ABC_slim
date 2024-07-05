@@ -1,11 +1,11 @@
 # Define the output file from the parameter generation as a Snakemake input dependency for the simulations
 rule all:
     input:
-        expand("data/vcf/{id}.vcf", id=[line.split(',')[0] for line in open('data/prior_parameters.csv').read().strip().split('\n')[1:]])
+        expand("data/vcf/{id}.vcf", id=[line.split(',')[0] for line in open('/data/prior_parameters.csv').read().strip().split('\n')[1:]])
 
 rule generate_parameters:
     output:
-        csv="data/prior_parameters.csv"
+        csv="/data/prior_parameters.csv"
     shell:
         """
         Rscript /scripts/generate_params.R
@@ -13,9 +13,9 @@ rule generate_parameters:
 
 rule run_simulation:
     input:
-        params="data/prior_parameters.csv"
+        params="/data/prior_parameters.csv"
     output:
-        vcf="data/vcf/{id}.vcf"
+        vcf="/data/vcf/{id}.vcf"
     shell:
         """
        # Extract parameters for the specific simulation ID

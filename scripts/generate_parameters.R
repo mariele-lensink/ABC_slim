@@ -20,4 +20,4 @@ params <- data.table(
 )
 
 # Write to a CSV file
-fwrite(params, "/data/prior_parameters.csv", sep = ",", col.names = TRUE)
+fwrite(params, "home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters.csv", sep = ",", col.names = TRUE)
