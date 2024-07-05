@@ -8,12 +8,15 @@ set.seed(as.integer(Sys.time()))
 num_simulations <- 10000
 params <- data.table(
   ID = 1:num_simulations,
-  gmu = runif(num_simulations),
-  imu = runif(num_simulations),
-  gd = runif(num_simulations),
-  igd = runif(num_simulations),
-  gdfe = runif(num_simulations),
-  idfe = runif(num_simulations)
+  gmu = runif(num_simulations,1e-11,1e-8),
+  imu = runif(num_simulations,,),
+  gd = runif(num_simulations,0.1,0.7),
+ # (0.1-0.7)
+  id = runif(num_simulations,0.1,0.7),
+  gdfe = runif(num_simulations,-0.1,-.001),
+  #.001-.01 (shape = 0.14)
+  idfe = runif(num_simulations,-0.1-.001)
+  #.001-.01
 )
 
 # Write to a CSV file
