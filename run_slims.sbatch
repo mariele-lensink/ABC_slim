@@ -8,7 +8,7 @@
 #SBATCH --array = 1-10000 #creates 10,000 tasks
 #SBATCH --cpus-per-task=2
 #SBATCH --account=gmonroegrp
-#SBATCH --partition=bmh
+#SBATCH --partition=low2
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
 
@@ -17,6 +17,6 @@ source ~/anaconda3/etc/profile.d/conda.sh
 # Activate your conda environment if needed
 conda activate slimsims
 
-snakemake --snakefile code/Snakefile --cores $SLURM_CPUS_PER_TASK
+snakemake --snakefile /code/Snakefile --cores $SLURM_CPUS_PER_TASK
 
 
