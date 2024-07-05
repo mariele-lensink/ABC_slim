@@ -31,8 +31,8 @@ for (line in intergenes)
     initializeMutationTypeNuc("m2", 0.1, "g", gdfe, 1);  // gene deleterious (recessive)
     initializeMutationTypeNuc("m3", 0.1, "g", idfe, 1);  // intergene deleterious 
 
-	 initializeGenomicElementType("g1", c(m1, m2), c(1-gd,gd), mmJukesCantor(gmu);  //gene mutation rate
-    initializeGenomicElementType("g2", c(m1, m3, m4), c(1-id,id), mmJukesCantor(imu); //intergene mutation rate
+	 initializeGenomicElementType("g1", c(m1, m2), c(1-gd,gd), mmJukesCantor(gmu));  //gene mutation rate
+    initializeGenomicElementType("g2", c(m1, m3, m4), c(1-id,id), mmJukesCantor(imu)); //intergene mutation rate
  
 	initializeGenomicElement(g1, gene_starts, gene_stops); 
  
@@ -48,5 +48,5 @@ p1.setSelfingRate(0.98); //arabidopsis has a high selfing rate
 
 1000 late() { //after 10*N generations
  g = p1.sampleIndividuals(1135).genomes; // generations = 15X the population of 1,135
- g.outputVCF(filePath=paste('/home/mlensink/ABC_slim/data/vcf/',seed,'.vcf',sep=''), simplifyNucleotides=T); 
+ g.outputVCF(filePath=paste('/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf',seed,'.vcf',sep=''), simplifyNucleotides=T); 
  }

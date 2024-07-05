@@ -13,7 +13,7 @@ rule generate_parameters:
 
 rule run_simulation:
     input:
-        params="data/simulation_parameters.csv"
+        params="data/prior_parameters.csv"
     output:
         vcf="data/vcf/{id}.vcf"
     shell:
