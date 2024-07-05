@@ -8,8 +8,8 @@ set.seed(as.integer(Sys.time()))
 num_simulations <- 10000
 params <- data.table(
   ID = 1:num_simulations,
-  gmu = runif(num_simulations,1e-11,1e-8),
-  imu = runif(num_simulations,,),
+  gmu = runif(num_simulations,1e-10,2e-8),
+  imu = runif(num_simulations,1e-10,2e-8),
   gd = runif(num_simulations,0.1,0.7),
  # (0.1-0.7)
   id = runif(num_simulations,0.1,0.7),
