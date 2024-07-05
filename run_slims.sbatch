@@ -5,7 +5,7 @@
 #SBATCH -J abc_slim
 #SBATCH -t 3-00:00:00
 #SBATCH --mem 30G #memory per task
-#SBATCH --cpus-per-task=500
+#SBATCH --cpus-per-task=200
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
