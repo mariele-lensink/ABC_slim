@@ -4,9 +4,8 @@
 #SBATCH -e /home/mlensink/slurm-log/abcslim_stderr-%j.txt
 #SBATCH -J abc_slim
 #SBATCH -t 3-00:00:00
-#SBATCH --mem 1G #memory per task
-#SBATCH --array=1-10000 #creates 10,000 tasks
-#SBATCH --cpus-per-task=2
+#SBATCH --mem 30G #memory per task
+#SBATCH --cpus-per-task=500
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
