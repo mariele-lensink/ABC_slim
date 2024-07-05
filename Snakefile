@@ -1,45 +1,24 @@
-def get_ids_from_csv():
-    with open('/data/prior_parameters.csv') as f:
-        lines = f.read().strip().split('\n')[1:]
-    return [line.split(',')[0] for line in lines]
-    
+import pandas as pd
+
 rule all:
     input:
-        "data/.parameters_generated",
-        expand("data/vcf/{id}.vcf", id=get_ids_from_csv())
+        expand("data/vcf/{id}.vcf", id=pd.read_csv("data/prior_parameters.csv")['ID'].tolist())
 
-rule generate_parameters:
+def get_params(wildcards):
+    parameters = pd.read_csv("data/prior_parameters.csv")
+    params = parameters.loc[parameters['ID'] == wildcards.id].to_dict('records')[0]
+    return params
+
+rule run_slim:
+    input:
+        params="data/prior_parameters.csv"
     output:
-        csv="/data/prior_parameters.csv"
+        vcf="data/vcf/{id}.vcf"
+    params:
+        lambda wildcards: get_params(wildcards)
     shell:
         """
-        Rscript /scripts/generate_params.R
-        """
-
-rule ensure_parameters:
-    input:
-        "/data/prior_parameters.csv"
-    output:
-        touch("data/.parameters_generated")
-
-rule run_simulation:
-    input:
-        params="/data/prior_parameters.csv"
-    output:
-        vcf="/data/vcf/{id}.vcf"
-    shell:
-        """
-        # Extract parameters for the specific simulation ID
-        params=$(awk -F, '$1 == "{wildcards.id}" {{print $0}}' {input.params})
-        
-        ID=$(echo $params | cut -d, -f1)
-        gmu=$(echo $params | cut -d, -f2)
-        imu=$(echo $params | cut -d, -f3)
-        gd=$(echo $params | cut -d, -f4)
-        id=$(echo $params | cut -d, -f5)
-        gdfe=$(echo $params | cut -d, -f6)
-        idfe=$(echo $params | cut -d, -f7)
-        
-        # Execute SLiM simulation with the extracted parameters
-        slim -d "ID=${ID}" -d "gmu=${gmu}" -d "imu=${imu}" -d "gd=${gd}" -d "igd=${id}" -d "gdfe=${gdfe}" -d "idfe=${idfe}" /scripts/ABC.slim
+        mkdir -p data/vcf
+        slim -d "ID={params[ID]}" -d "gmu={params[gmu]}" -d "imu={params[imu]}" -d "gd={params[gd]}" \
+             -d "igd={params[id]}" -d "gdfe={params[gdfe]}" -d "idfe={params[idfe]}" /scripts/ABC.slim
         """

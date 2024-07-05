@@ -48,5 +48,5 @@ p1.setSelfingRate(0.98); //arabidopsis has a high selfing rate
 
 1000 late() { //after 10*N generations
  g = p1.sampleIndividuals(1135).genomes; // generations = 15X the population of 1,135
- g.outputVCF(filePath=paste('/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf',seed,'.vcf',sep=''), simplifyNucleotides=T); 
+ g.outputVCF(filePath=paste('/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/',seed,'.vcf',sep=''), simplifyNucleotides=T); 
  }
