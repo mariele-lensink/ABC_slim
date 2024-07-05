@@ -5,7 +5,7 @@
 #SBATCH -J abc_slim
 #SBATCH -t 3-00:00:00
 #SBATCH --mem 1G #memory per task
-#SBATCH --array = 1-10000 #creates 10,000 tasks
+#SBATCH --array=1-10000 #creates 10,000 tasks
 #SBATCH --cpus-per-task=2
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=low2
