@@ -6,7 +6,7 @@ rule all:
 
 def get_params(wildcards):
     # Load parameters and ensure ID is read as integer
-    parameters = pd.read_csv("prior_parameters.csv")
+    parameters = pd.read_csv("data/prior_parameters.csv")
     print("Data types in the dataframe:", parameters.dtypes)  # Debug: Check data types
     print("Sample data:", parameters.head())  # Debug: Check first few rows
 
