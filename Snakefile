@@ -6,8 +6,10 @@ rule all:
 
 def get_params(wildcards):
     parameters = pd.read_csv("data/prior_parameters.csv")
-    params = parameters.loc[parameters['ID'] == wildcards.id].to_dict('records')[0]
-    return params
+    filtered_params = parameters.loc[parameters['ID'] == wildcards.id]
+    if filtered_params.empty:
+        raise ValueError(f"No parameters found for ID {wildcards.id}")
+    return filtered_params.to_dict('records')[0]
 
 rule run_slim:
     input:
