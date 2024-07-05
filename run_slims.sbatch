@@ -8,7 +8,7 @@
 #SBATCH --array=1-10000 #creates 10,000 tasks
 #SBATCH --cpus-per-task=2
 #SBATCH --account=gmonroegrp
-#SBATCH --partition=low2
+#SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
 
