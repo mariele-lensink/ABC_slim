@@ -2,14 +2,11 @@ def get_ids_from_csv():
     with open('/data/prior_parameters.csv') as f:
         lines = f.read().strip().split('\n')[1:]
     return [line.split(',')[0] for line in lines]
-
-def get_vcf_files():
-    ids = get_ids_from_csv()
-    return expand("data/vcf/{id}.vcf", id=ids)
-
+    
 rule all:
     input:
-        get_vcf_files
+        "data/.parameters_generated",
+        expand("data/vcf/{id}.vcf", id=get_ids_from_csv())
 
 rule generate_parameters:
     output:
@@ -18,6 +15,12 @@ rule generate_parameters:
         """
         Rscript /scripts/generate_params.R
         """
+
+rule ensure_parameters:
+    input:
+        "/data/prior_parameters.csv"
+    output:
+        touch("data/.parameters_generated")
 
 rule run_simulation:
     input:
