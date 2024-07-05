@@ -25,11 +25,18 @@ rule run_slim:
         params="data/prior_parameters.csv"
     output:
         vcf="data/vcf/{id}.vcf"
-    params:
-        lambda wildcards: get_params(wildcards)
     shell:
         """
+        params=$(awk -F, '$1 == "{wildcards.id}" {{print $0}}' {input.params})
+        ID=$(echo $params | cut -d, -f1)
+        gmu=$(echo $params | cut -d, -f2)
+        imu=$(echo $params | cut -d, -f3)
+        gd=$(echo $params | cut -d, -f4)
+        igd=$(echo $params | cut -d, -f5)
+        gdfe=$(echo $params | cut -d, -f6)
+        idfe=$(echo $params | cut -d, -f7)
+        
         mkdir -p data/vcf
-        slim -d "ID={params[ID]}" -d "gmu={params[gmu]}" -d "imu={params[imu]}" -d "gd={params[gd]}" \
-             -d "igd={params[id]}" -d "gdfe={params[gdfe]}" -d "idfe={params[idfe]}" /scripts/ABC.slim
+        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" \
+             -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim > {output.vcf}
         """
