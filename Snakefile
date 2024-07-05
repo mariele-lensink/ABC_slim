@@ -1,7 +1,15 @@
-# Define the output file from the parameter generation as a Snakemake input dependency for the simulations
+def get_ids_from_csv():
+    with open('/data/prior_parameters.csv') as f:
+        lines = f.read().strip().split('\n')[1:]
+    return [line.split(',')[0] for line in lines]
+
+def get_vcf_files():
+    ids = get_ids_from_csv()
+    return expand("data/vcf/{id}.vcf", id=ids)
+
 rule all:
     input:
-        expand("data/vcf/{id}.vcf", id=lambda wildcards: get_ids_from_csv())
+        get_vcf_files
 
 rule generate_parameters:
     output:
@@ -18,7 +26,7 @@ rule run_simulation:
         vcf="/data/vcf/{id}.vcf"
     shell:
         """
-       # Extract parameters for the specific simulation ID
+        # Extract parameters for the specific simulation ID
         params=$(awk -F, '$1 == "{wildcards.id}" {{print $0}}' {input.params})
         
         ID=$(echo $params | cut -d, -f1)
@@ -29,23 +37,6 @@ rule run_simulation:
         gdfe=$(echo $params | cut -d, -f6)
         idfe=$(echo $params | cut -d, -f7)
         
-         # Execute SLiM simulation with the extracted parameters
-        slim -d "ID=${ID}" -d "gmu=${gmu}" -d "imu=${imu}" -d "gd=${gd}" -d "igd=${id}" -d "gdfe=${gdfe}" -d "idfe=${idfe}" /scripts/ABC.slim 
+        # Execute SLiM simulation with the extracted parameters
+        slim -d "ID=${ID}" -d "gmu=${gmu}" -d "imu=${imu}" -d "gd=${gd}" -d "igd=${id}" -d "gdfe=${gdfe}" -d "idfe=${idfe}" /scripts/ABC.slim
         """
-def get_ids_from_csv():
-    with open('/data/prior_parameters.csv') as f:
-        lines = f.read().strip().split('\n')[1:]
-    return [line.split(',')[0] for line in lines]
-
-rule workflow:
-    input:
-        "data/vcf/{id}.vcf"
-    run:
-        # Generate the parameter file
-        shell("snakemake generate_parameters")
-        # Update the list of ids
-        ids = get_ids_from_csv()
-        # Run the main rule
-        for id in ids:
-            shell(f"snakemake run_simulation --cores {ALLOCATED_CPUS} --config id={id}")
-
