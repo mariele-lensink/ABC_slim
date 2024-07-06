@@ -24,5 +24,5 @@ rule run_slim_simulation:
         """
         slim -d ID={wildcards.ID} -d gmu={params.gmu} -d imu={params.imu} \
         -d gd={params.gd} -d id={params.id} -d gdfe={params.gdfe} -d idfe={params.idfe} \
-        /scripts/ABC.slim > {params.output_vcf}
+        /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {params.output_vcf}
         """
