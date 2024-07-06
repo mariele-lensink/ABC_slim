@@ -36,7 +36,5 @@ rule run_slim:
         gdfe=$(echo $params | cut -d, -f6)
         idfe=$(echo $params | cut -d, -f7)
         
-        mkdir -p data/vcf
-        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" \
-             -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim > {output.vcf}
+        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim > {output.vcf}
         """
