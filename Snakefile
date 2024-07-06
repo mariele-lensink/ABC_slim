@@ -5,7 +5,7 @@ params = pd.read_csv("data/prior_parameters.csv")
 
 # Function to create output filenames
 def create_output(wildcards):
-    return "data/vcf/"str(wildcards.ID) + ".vcf"
+    return "data/vcf/"+str(wildcards.ID) + ".vcf"
 
 rule all:
     input:
