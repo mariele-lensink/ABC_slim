@@ -1,4 +1,9 @@
+import os
 import pandas as pd
+
+# Ensure the directory exists before running the main rules
+if not os.path.exists("data/vcf/"):
+    os.makedirs("data/vcf/")
 
 rule all:
     input:
@@ -7,18 +12,9 @@ rule all:
 def get_params(wildcards):
     # Load parameters and ensure ID is read as integer
     parameters = pd.read_csv("data/prior_parameters.csv")
-    print("Data types in the dataframe:", parameters.dtypes)  # Debug: Check data types
-    print("Sample data:", parameters.head())  # Debug: Check first few rows
-
     # Convert ID in wildcards to integer if necessary
     target_id = int(wildcards.id)
     print("Looking for ID:", target_id)  # Debug: Output the ID being searched
-
-    # Filter for the matching ID
-    filtered_params = parameters.loc[parameters['ID'] == target_id]
-    if filtered_params.empty:
-        raise ValueError(f"No parameters found for ID {target_id}")
-    return filtered_params.to_dict('records')[0]
 
 rule run_slim:
     input:
@@ -36,5 +32,5 @@ rule run_slim:
         gdfe=$(echo $params | cut -d, -f6)
         idfe=$(echo $params | cut -d, -f7)
         
-        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim > {output.vcf}
+        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim
         """
