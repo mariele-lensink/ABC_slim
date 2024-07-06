@@ -23,6 +23,7 @@ rule run_slim:
         vcf="data/vcf/{id}.vcf"
     shell:
         """
+        mkdir -p data/vcf/
         params=$(awk -F, '$1 == "{wildcards.id}" {{print $0}}' {input.params})
         ID=$(echo $params | cut -d, -f1)
         gmu=$(echo $params | cut -d, -f2)
@@ -32,5 +33,9 @@ rule run_slim:
         gdfe=$(echo $params | cut -d, -f6)
         idfe=$(echo $params | cut -d, -f7)
         
-        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim
+        echo "Running SLiM simulation for ID: $ID"
+        echo "Command: slim -d \"ID=$ID\" -d \"gmu=$gmu\" -d \"imu=$imu\" -d \"gd=$gd\" -d \"igd=$igd\" -d \"gdfe=$gdfe\" -d \"idfe=$idfe\" /scripts/ABC.slim"
+        
+        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim > {output.vcf}
         """
+
