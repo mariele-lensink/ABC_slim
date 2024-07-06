@@ -1,41 +1,29 @@
-import os
 import pandas as pd
 
-# Ensure the directory exists before running the main rules
-if not os.path.exists("data/vcf/"):
-    os.makedirs("data/vcf/")
+# Load the parameter CSV file
+params = pd.read_csv("data/prior_parameters.csv")
+
+# Function to create output filenames
+def create_output(wildcards):
+    return "data/vcf/"str(wildcards.ID) + ".vcf"
 
 rule all:
     input:
-        expand("data/vcf/{id}.vcf", id=pd.read_csv("data/prior_parameters.csv")['ID'].tolist())
+        expand("data/vcf/{ID}.vcf", ID=params['ID'])
 
-def get_params(wildcards):
-    # Load parameters and ensure ID is read as integer
-    parameters = pd.read_csv("data/prior_parameters.csv")
-    # Convert ID in wildcards to integer if necessary
-    target_id = int(wildcards.id)
-    print("Looking for ID:", target_id)  # Debug: Output the ID being searched
-
-rule run_slim:
-    input:
-        params="data/prior_parameters.csv"
+rule run_slim_simulation:
     output:
-        vcf="data/vcf/{id}.vcf"
+        sim_output = create_output
+    params:
+        # Extract parameters by ID
+        gmu = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gmu'].values[0],
+        imu = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'imu'].values[0],
+        gd = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gd'].values[0],
+        id = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'id'].values[0],
+        gdfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gdfe'].values[0],
+        idfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'idfe'].values[0]
     shell:
         """
-        mkdir -p data/vcf/
-        params=$(awk -F, '$1 == "{wildcards.id}" {{print $0}}' {input.params})
-        ID=$(echo $params | cut -d, -f1)
-        gmu=$(echo $params | cut -d, -f2)
-        imu=$(echo $params | cut -d, -f3)
-        gd=$(echo $params | cut -d, -f4)
-        igd=$(echo $params | cut -d, -f5)
-        gdfe=$(echo $params | cut -d, -f6)
-        idfe=$(echo $params | cut -d, -f7)
-        
-        echo "Running SLiM simulation for ID: $ID"
-        echo "Command: slim -d \"ID=$ID\" -d \"gmu=$gmu\" -d \"imu=$imu\" -d \"gd=$gd\" -d \"igd=$igd\" -d \"gdfe=$gdfe\" -d \"idfe=$idfe\" /scripts/ABC.slim"
-        
-        slim -d "ID=$ID" -d "gmu=$gmu" -d "imu=$imu" -d "gd=$gd" -d "igd=$igd" -d "gdfe=$gdfe" -d "idfe=$idfe" /scripts/ABC.slim > {output.vcf}
+        slim -d ID={wildcards.ID} -d gmu={params.gmu} -d imu={params.imu} \
+        -d gd={params.gd} -d id={params.id} -d gdfe={params.gdfe} -d idfe={params.idfe} /scripts/ABC.slim > {output.sim_output}
         """
-
