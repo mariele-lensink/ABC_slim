@@ -32,7 +32,7 @@ for (line in intergenes)
     initializeMutationTypeNuc("m3", 0.1, "g", idfe, 1);  // intergene deleterious 
 
 	 initializeGenomicElementType("g1", c(m1, m2), c(1-gd,gd), mmJukesCantor(gmu));  //gene mutation rate
-    initializeGenomicElementType("g2", c(m1, m3, m4), c(1-id,id), mmJukesCantor(imu)); //intergene mutation rate
+    initializeGenomicElementType("g2", c(m1, m3), c(1-id,id), mmJukesCantor(imu)); //intergene mutation rate
  
 	initializeGenomicElement(g1, gene_starts, gene_stops); 
  
