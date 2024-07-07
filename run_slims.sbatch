@@ -16,7 +16,7 @@ source ~/anaconda3/etc/profile.d/conda.sh
 # Activate your conda environment if needed
 conda activate slimsims
 
-Rscript /scripts/generate_params.R
+Rscript /scripts/generate_parameters.R
 snakemake --snakefile Snakefile --cores $SLURM_CPUS_PER_TASK
 
 
