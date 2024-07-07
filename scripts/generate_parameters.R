@@ -15,7 +15,7 @@ params <- data.table(
   id = runif(num_simulations,0.1,0.7),
   gdfe = runif(num_simulations,-0.1,-.001),
   #.001-.01 (shape = 0.14)
-  idfe = runif(num_simulations,-0.1-.001)
+  idfe = runif(num_simulations,-0.1,-.001)
   #.001-.01
 )
 
