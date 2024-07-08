@@ -3,7 +3,7 @@ library(polymorphology2)
 library(parallel)
 
 # real gene windows created from TAIR 10 gff for CHROM 5 first 100 genes
-gene_windows <- fread("github/ABC_slim/1001info/gene_windows.csv")
+gene_windows <- fread("1001info/gene_windows.csv")
 
 #tajima directory
 tajima_dir<-"data/tajima/"
