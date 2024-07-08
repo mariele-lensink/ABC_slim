@@ -4,10 +4,10 @@
 #SBATCH -e /home/mlensink/slurm-log/quicksimstats_stderr-%j.txt
 #SBATCH -J abc_slim
 #SBATCH -t 3-00:00:00
-#SBATCH --mem 100G 
+#SBATCH --mem 100G
 #SBATCH --cpus-per-task=200
 #SBATCH --account=gmonroegrp
-#SBATCH --partition=bmm
+#SBATCH --partition=bmh
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
 
