@@ -4,7 +4,7 @@
 #SBATCH -e /home/mlensink/slurm-log/quicksimstats_stderr-%j.txt
 #SBATCH -J abc_slim
 #SBATCH -t 3-00:00:00
-#SBATCH --mem 60G 
+#SBATCH --mem 100G 
 #SBATCH --cpus-per-task=200
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm
