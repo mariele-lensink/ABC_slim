@@ -9,11 +9,8 @@ OUTPUT_DIR="data/tajima"
 # Create the output directory if it doesn't already exist
 mkdir -p ${OUTPUT_DIR}
 
-# Loop through each VCF file in the directory
-for vcf_file in ${VCF_DIR}/*.vcf; do
-    # Extract the ID from the filename
-    ID=$(basename ${vcf_file} .vcf)
+# Export variables to be available in the parallel environment
+export VCF_DIR OUTPUT_DIR
 
-    # Run vcftools to calculate Tajima's D
-    vcftools --vcf ${vcf_file} --out ${OUTPUT_DIR}/${ID} --TajimaD 100
-done
+# Use parallel to run vcftools for each VCF file
+parallel --jobs 0 --env VCF_DIR,OUTPUT_DIR 'vcftools --vcf {} --out ${OUTPUT_DIR}/$(basename {} .vcf) --TajimaD 100' ::: ${VCF_DIR}/*.vcf
