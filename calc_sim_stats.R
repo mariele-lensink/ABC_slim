@@ -11,7 +11,7 @@ colnames(intergenes)<-c("start","stop","V3")
 setkey(intergenes,start,stop)
 
 #tajima directory
-tajima_dir<-"data/tajima/"
+tajima_dir<-"data/tajima_50k/"
 # Get all Tajima's D files
 tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
 
