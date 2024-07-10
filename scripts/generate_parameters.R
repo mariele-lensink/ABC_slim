@@ -5,7 +5,7 @@ library(parallel)
 set.seed(as.integer(Sys.time()))
 
 # Generate 100,000 unique IDs and random parameters
-num_simulations <- 50000
+num_simulations <- 500000
 params <- data.table(
   ID = 1:num_simulations,
   gmu = runif(num_simulations,1e-10,2e-8),
