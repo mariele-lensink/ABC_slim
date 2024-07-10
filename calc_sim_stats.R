@@ -1,9 +1,14 @@
 library(data.table)
-library(polymorphology2)
 library(parallel)
 
-# real gene windows created from TAIR 10 gff for CHROM 5 first 100 genes
-gene_windows <- fread("1001info/gene_windows.csv")
+#ene windows created from TAIR 10 gff for CHROM 5 first 100 genes same as sim
+genes<-fread("1001info/gene100.csv")
+colnames(genes)<-c("start","stop","V3")
+setkey(genes,start,stop)
+
+intergenes<-fread("1001info/intergene100.csv")
+colnames(intergenes)<-c("start","stop","V3")
+setkey(intergenes,start,stop)
 
 #tajima directory
 tajima_dir<-"data/tajima/"
@@ -16,22 +21,24 @@ process_file <- function(file_path) {
   tajima[, START := BIN_START]
   tajima[, STOP := START + 100]
   tajima[, CHROM := 5]
+  setkey(tajima,START,STOP)  
   
-  # Calculate SNP means for all gene windows
-  gene_windows_snps <- features_in_features(gene_windows, tajima, mode = "mean", value = "N_SNPS")
-  gene_windows[, counts := gene_windows_snps$mean[match(gene_windows$ID, gene_windows_snps$ID)]]
+  gene_overlaps<-foverlaps(tajima,genes,by.x=c("START","STOP"),by.y=c("start","stop"),type = 'any',nomatch=0L)
+  intergene_overlaps<-foverlaps(tajima,intergenes,by.x=c("START","STOP"),by.y=c("start","stop"),type = 'any',nomatch=0L)
   
-  # Calculate Tajima's D means for all gene windows
-  gene_windows_tajima <- features_in_features(gene_windows, tajima, mode = "mean", value = "TajimaD")
-  gene_windows[, tajima := gene_windows_tajima$mean[match(gene_windows$ID, gene_windows_tajima$ID)]]
+  gene_overlaps[,sum(N_SNPS)]
+  gene_overlaps[TajimaD != "NaN",mean(TajimaD)]
+  
+  intergene_overlaps[,sum(N_SNPS)]
+  intergene_overlaps[TajimaD != "NaN",mean(TajimaD)]
   
   # Compute stats
   stats <- data.table(
     ID = sub("\\.Tajima\\.D$", "", basename(file_path)),
-    g_snps = gene_windows[REGION == "gene body", mean(counts, na.rm = TRUE)],
-    i_snps = gene_windows[REGION != "gene body", mean(counts, na.rm = TRUE)],
-    g_td = gene_windows[REGION == "gene body", mean(tajima, na.rm = TRUE)],
-    i_td = gene_windows[REGION != "gene body", mean(tajima, na.rm = TRUE)]
+    g_snps=gene_overlaps[,sum(N_SNPS)],
+    i_snps=intergene_overlaps[,sum(N_SNPS)],
+    g_td=gene_overlaps[TajimaD != "NaN",mean(TajimaD)],
+    i_td=intergene_overlaps[TajimaD != "NaN",mean(TajimaD)]
   )
   
   return(stats)
