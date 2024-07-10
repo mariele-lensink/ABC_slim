@@ -1,12 +1,12 @@
 import pandas as pd
 
 # Load the parameter CSV file
-params = pd.read_csv("data/prior_parameters2.csv")
+params = pd.read_csv("data/prior_parameters.csv")
 params['ID'] = params['ID'].astype(float).astype(int)
 
 rule all:
     input:
-        expand("data/vcf/{ID}.vcf", ID=params['ID'])
+        expand("data/tajima/{ID}.Tajima.D", ID=params['ID'])
 
 rule run_slim_simulation:
     output:
@@ -26,4 +26,15 @@ rule run_slim_simulation:
         slim -d ID={wildcards.ID} -d gmu={params.gmu} -d imu={params.imu} \
         -d gd={params.gd} -d id={params.id} -d gdfe={params.gdfe} -d idfe={params.idfe} \
         /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {params.output_vcf}
+        """
+
+rule calculate_tajimas_d:
+    input:
+        vcf="data/vcf/{ID}.vcf"
+    output:
+        tajima="data/tajima/{ID}.Tajima.D"
+    shell:
+        """
+        mkdir -p data/tajima
+        vcftools --vcf {input.vcf} --out {output.tajima} --TajimaD 100
         """
