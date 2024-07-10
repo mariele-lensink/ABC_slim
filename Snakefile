@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the parameter CSV file
-params = pd.read_csv("data/prior_parameters.csv")
+params = pd.read_csv("data/prior_parameters2.csv")
 
 rule all:
     input:
