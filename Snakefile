@@ -2,7 +2,7 @@ import pandas as pd
 
 
 # Load the parameter CSV file
-params = pd.read_csv("data/prior_parameters.csv")
+params = pd.read_csv("data/prior_parameters_april9.csv")
 params['ID'] = params['ID'].astype(float).astype(int)
 
 rule all:
