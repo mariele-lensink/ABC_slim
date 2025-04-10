@@ -11,7 +11,7 @@ colnames(intergenes)<-c("start","stop","V3")
 setkey(intergenes,start,stop)
 
 #tajima directory
-tajima_dir<-"data/tajima_50k/"
+tajima_dir<-"/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima_80k_1.19.2025/"
 # Get all Tajima's D files
 tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
 
@@ -50,4 +50,4 @@ results <- mclapply(tajima_files, process_file, mc.cores = no_cores)
 
 # Combine all results into one data.table
 final_stats <- rbindlist(results)
-fwrite(final_stats, "sim_tajima_stats.csv")
+fwrite(final_stats, "sim_tajima_stats_100k_1.30.2025.csv")

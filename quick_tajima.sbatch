@@ -3,7 +3,7 @@
 #SBATCH -o /home/mlensink/slurm-log/quicktd_stdout-%j.txt
 #SBATCH -e /home/mlensink/slurm-log/quicktd_stderr-%j.txt
 #SBATCH -J abc_slim
-#SBATCH -t 3-00:00:00
+#SBATCH -t 10-00:00:00
 #SBATCH --mem 30G #memory per task
 #SBATCH --cpus-per-task=200
 #SBATCH --account=gmonroegrp
@@ -16,4 +16,5 @@ source ~/anaconda3/etc/profile.d/conda.sh
 # Activate your conda environment if needed
 conda activate slimsims
 
-./quick_tajima.sh
+#./quick_tajima.sh
+./vcf_calc_td_1.26.2025.sh

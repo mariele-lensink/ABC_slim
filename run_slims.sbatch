@@ -4,7 +4,7 @@
 #SBATCH -e /home/mlensink/slurm-log/abcslim_stderr-%j.txt
 #SBATCH -J abc_slim
 #SBATCH -t 22-00:00:00
-#SBATCH --mem 30G #memory per task
+#SBATCH --mem 50G #memory per task
 #SBATCH --ntasks=300
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm

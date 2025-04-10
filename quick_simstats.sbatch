@@ -2,12 +2,12 @@
 #SBATCH -D /home/mlensink/slimsimulations/ABCslim/ABC_slim/
 #SBATCH -o /home/mlensink/slurm-log/quicksimstats_stdout-%j.txt
 #SBATCH -e /home/mlensink/slurm-log/quicksimstats_stderr-%j.txt
-#SBATCH -J abc_slim
+#SBATCH -J abc_simstats
 #SBATCH -t 3-00:00:00
 #SBATCH --mem 100G
 #SBATCH --cpus-per-task=200
 #SBATCH --account=gmonroegrp
-#SBATCH --partition=bmh
+#SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
 
