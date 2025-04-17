@@ -1,1 +1,2 @@
 param_file: "data/prior_parameters_april9.csv"
+slim_script: /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim
