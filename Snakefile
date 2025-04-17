@@ -26,7 +26,7 @@ rule run_slim_simulation:
     output:
         sim_output = "data/vcf/{ID}.vcf"
     params:
-        slim_script = slim_script
+        output_vcf = lambda wildcards: f"data/vcf/{wildcards.ID}.vcf"
     run:
         import pandas as pd
         params = pd.read_csv(input.param_file)
@@ -35,5 +35,5 @@ rule run_slim_simulation:
         shell("""
             slim -d ID={row.ID} -d gmu={row.gmu} -d imu={row.imu} \
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
-                 {params.slim_script}
+                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {params.output_vcf}
         """)
