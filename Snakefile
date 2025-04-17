@@ -21,11 +21,12 @@ rule run_slim_simulation:
         id = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'id'].values[0],
         gdfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gdfe'].values[0],
         idfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'idfe'].values[0],
+        output_vcf = lambda wildcards: f"data/vcf/{wildcards.ID}.vcf"
 
     shell:
         """
         slim -d ID={wildcards.ID} -d gmu={params.gmu(wildcards)} -d imu={params.imu(wildcards)} \
         -d gd={params.gd(wildcards)} -d id={params.id(wildcards)} -d gdfe={params.gdfe(wildcards)} \
         -d idfe={params.idfe(wildcards)} \
-        {slim_script} > {output.sim_output}
+        {slim_script} > {params.output_vcf}
         """
