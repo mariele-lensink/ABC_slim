@@ -13,20 +13,16 @@ all_params = pd.read_csv(params_file)
 all_params["ID"] = all_params["ID"].astype(int)
 all_ids = all_params["ID"].tolist()
 
-slim_script = config["slim_script"]
-
-
 rule all:
     input:
         expand("data/vcf/{ID}.vcf", ID=all_ids)
+        expand("data/tajima/{ID}.TajimaD", ID=all_ids)  # Add Tajima's D output files to the final workflow
 
 rule run_slim_simulation:
     input:
         param_file = params_file
     output:
         sim_output = "data/vcf/{ID}.vcf"
-    params:
-        output_vcf = lambda wildcards: f"data/vcf/{wildcards.ID}.vcf"
     log: "logs/{ID}.log"
     run:
         import pandas as pd
@@ -39,3 +35,12 @@ rule run_slim_simulation:
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
                   /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log}
         """)
+rule run_tajima:
+    input:
+        vcf_file="data/vcf/{ID}.vcf"
+    output:
+        tajima_output="data/tajima/{ID}.TajimaD"
+    shell:
+        """
+        vcftools --vcf {input.vcf_file} --out {output.tajima_output} --TajimaD 100
+        """
