@@ -33,5 +33,10 @@ rule run_slim_simulation:
         shell("""
             slim -d ID={row.ID} -d gmu={row.gmu} -d imu={row.imu} \
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
+<<<<<<< HEAD
                  {slim_script} > data/vcf/{wildcards.ID}.vcf
         """)
+=======
+                 {config['slim_script']}
+        """)
+>>>>>>> 9a890f53b23951c1e4ab93654bf211e59dc9a8b2
