@@ -4,7 +4,7 @@
 #SBATCH -e /home/mlensink/slurm-log/abcslim_apr16_stderr-%j.txt
 #SBATCH -J abc_slim_apr16
 #SBATCH -t 22-00:00:00
-#SBATCH --mem 10G
+#SBATCH --mem 50G
 #SBATCH --ntasks=100
 #SBATCH --cpus-per-task=1
 #SBATCH --account=gmonroegrp
@@ -21,7 +21,7 @@ Rscript /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/generate_paramet
 snakemake --snakefile Snakefile \
 	  --configfile config.yaml \
 	  --jobs 100\
-	  --cores $SLURM_CPUS_PER_TASK \
+	  --cores 100 \
 	  --latency-wait 60 \
           --rerun-incomplete \
           --keep-going
