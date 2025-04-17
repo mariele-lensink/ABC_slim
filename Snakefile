@@ -15,7 +15,7 @@ all_ids = all_params["ID"].tolist()
 
 rule all:
     input:
-        expand("data/vcf/{ID}.vcf", ID=all_ids)
+        expand("data/vcf/{ID}.vcf", ID=all_ids),
         expand("data/tajima/{ID}.TajimaD", ID=all_ids)  # Add Tajima's D output files to the final workflow
 
 rule run_slim_simulation:
