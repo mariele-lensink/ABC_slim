@@ -1,25 +1,25 @@
 import pandas as pd
 
-
 # Load the parameter CSV file
-params = pd.read_csv("data/prior_parameters_april9.csv")
-params['ID'] = params['ID'].astype(float).astype(int)
+params_file = config["param_file"]
+#params_file = "data/prior_parameters_april9.csv"
 
 rule all:
     input:
-        expand("data/vcf/{ID}.vcf", ID=params['ID'])
+        expand("data/vcf/{ID}.vcf", ID=pd.read_csv(params_file)['ID'])
+
 
 rule run_slim_simulation:
     output:
         sim_output="data/vcf/{ID}.vcf"
     params:
         # Extract parameters by ID
-        gmu = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gmu'].values[0],
-        imu = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'imu'].values[0],
-        gd = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gd'].values[0],
-        id = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'id'].values[0],
-        gdfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gdfe'].values[0],
-        idfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'idfe'].values[0],
+        gmu = lambda wildcards: pd.read_csv(params_file).loc[params['ID'] == int(wildcards.ID), 'gmu'].values[0],
+        imu = lambda wildcards: pd.read_csv(params_file).loc[params['ID'] == int(wildcards.ID), 'imu'].values[0],
+        gd = lambda wildcards: pd.read_csv(params_file).loc[params['ID'] == int(wildcards.ID), 'gd'].values[0],
+        id = lambda wildcards: pd.read_csv(params_file).loc[params['ID'] == int(wildcards.ID), 'id'].values[0],
+        gdfe = lambda wildcards: pd.read_csv(params_file).loc[params['ID'] == int(wildcards.ID), 'gdfe'].values[0],
+        idfe = lambda wildcards: pd.read_csv(params_file).loc[params['ID'] == int(wildcards.ID), 'idfe'].values[0],
         # Dynamic output filename creation
         output_vcf = lambda wildcards: f"data/vcf/{wildcards.ID}.vcf"
     shell:
