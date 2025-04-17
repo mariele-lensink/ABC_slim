@@ -35,5 +35,5 @@ rule run_slim_simulation:
         shell("""
             slim -d ID={row.ID} -d gmu={row.gmu} -d imu={row.imu} \
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
-                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {params.output_vcf}
+                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {output.sim_output}
         """)
