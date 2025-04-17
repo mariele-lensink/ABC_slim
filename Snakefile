@@ -32,9 +32,10 @@ rule run_slim_simulation:
         import pandas as pd
         params = pd.read_csv(input.param_file)
         row = params.loc[params["ID"] == int(wildcards.ID)].squeeze()
+        id_int = int(row.ID)
 
         shell("""
-            slim -d ID={row.ID} -d gmu={row.gmu} -d imu={row.imu} \
+            slim -d ID={id_int} -d gmu={row.gmu} -d imu={row.imu} \
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
                   /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log}
         """)
