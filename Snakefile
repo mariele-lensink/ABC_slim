@@ -3,6 +3,7 @@ import pandas as pd
 # Define the parameter file path from config
 #params_file = config["param_file"]
 all_params = pd.read_csv("data/prior_parameters_april9.csv")
+params_file = pd.read_csv("data/prior_parameters_april9.csv")
 # Load all the IDs
 #all_params = pd.read_csv(params_file)
 all_params["ID"] = all_params["ID"].astype(int)
