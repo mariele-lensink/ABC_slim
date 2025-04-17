@@ -5,7 +5,7 @@
 #SBATCH -J abc_slim
 #SBATCH -t 22-00:00:00
 #SBATCH --mem 20G #memory per task
-#SBATCH --ntasks=100
+#SBATCH --ntasks=200
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
