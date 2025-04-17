@@ -25,6 +25,8 @@ rule run_slim_simulation:
         param_file = params_file
     output:
         sim_output = "data/vcf/{ID}.vcf"
+    params:
+        slim_script = slim_script
     run:
         import pandas as pd
         params = pd.read_csv(input.param_file)
@@ -33,5 +35,5 @@ rule run_slim_simulation:
         shell("""
             slim -d ID={row.ID} -d gmu={row.gmu} -d imu={row.imu} \
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
-		{config['slim_script']}
+                 {params.slim_script}
         """)
