@@ -1,32 +1,29 @@
 import pandas as pd
 
-# Load the parameter CSV file
+# Define the parameter file path from config
 params_file = config["param_file"]
-params = pd.read_csv(params_file)
-params['ID'] = params['ID'].astype(int)
+
+# Load all the IDs
+all_params = pd.read_csv(params_file)
+all_params["ID"] = all_params["ID"].astype(int)
+all_ids = all_params["ID"].tolist()
 
 rule all:
     input:
-        expand("data/vcf/{ID}.vcf", ID=params['ID'])
-
+        expand("data/vcf/{ID}.vcf", ID=all_ids)
 
 rule run_slim_simulation:
+    input:
+        param_file = params_file
     output:
-        sim_output="data/vcf/{ID}.vcf"
-    params:
-        # Extract parameters by ID
-        gmu = lambda wwildcardsc: params.loc[params['ID'] == int(wildcards.ID), 'gmu'].values[0],
-        imu = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'imu'].values[0],
-        gd = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gd'].values[0],
-        id = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'id'].values[0],
-        gdfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'gdfe'].values[0],
-        idfe = lambda wildcards: params.loc[params['ID'] == int(wildcards.ID), 'idfe'].values[0],
-        output_vcf = lambda wildcards: f"data/vcf/{wildcards.ID}.vcf"
+        sim_output = "data/vcf/{ID}.vcf"
+    run:
+        import pandas as pd
+        params = pd.read_csv(input.param_file)
+        row = params.loc[params["ID"] == int(wildcards.ID)].squeeze()
 
-    shell:
-        """
-        slim -d ID={wildcards.ID} -d gmu={params.gmu(wildcards)} -d imu={params.imu(wildcards)} \
-        -d gd={params.gd(wildcards)} -d id={params.id(wildcards)} -d gdfe={params.gdfe(wildcards)} \
-        -d idfe={params.idfe(wildcards)} \
-        {slim_script} > {params.output_vcf}
-        """
+        shell("""
+            slim -d ID={row.ID} -d gmu={row.gmu} -d imu={row.imu} \
+                 -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
+                 {slim_script} > data/vcf/{wildcards.ID}.vcf
+        """)
