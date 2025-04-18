@@ -30,7 +30,7 @@ rule run_slim_simulation:
         row = params.loc[params["ID"] == int(wildcards.ID)].squeeze()
         id_int = int(row.ID)
 
-    shell(f"""
+    shell("""
             slim -d ID={id_int} -d gmu={row.gmu} -d imu={row.imu} \
                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
                   /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log}
