@@ -4,10 +4,6 @@ configfile:"config.yaml"
 # Define the parameter file path from config
 params_file = config["param_file"]
 
-##for unlock issues
-##all_params = pd.read_csv("data/prior_parameters_april9.csv")
-##params_file = pd.read_csv("data/prior_parameters_april9.csv")
-
 # Load all the IDs
 all_params = pd.read_csv(params_file)
 all_params["ID"] = all_params["ID"].astype(int)
@@ -15,8 +11,8 @@ all_ids = all_params["ID"].tolist()
 
 rule all:
     input:
-        expand("data/vcf/{ID}.vcf", ID=all_ids),
-        expand("data/tajima/{ID}.Tajima.D", ID=all_ids)  # Add Tajima's D output files to the final workflow
+        #expand("data/vcf/{ID}.vcf", ID=all_ids),
+        expand("data/tajima/{ID}.Tajima.D", ID=all_ids) 
 
 rule run_slim_simulation:
     input:
