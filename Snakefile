@@ -16,7 +16,7 @@ all_ids = all_params["ID"].tolist()
 rule all:
     input:
         expand("data/vcf/{ID}.vcf", ID=all_ids),
-        expand("data/tajima/{ID}.TajimaD", ID=all_ids)  # Add Tajima's D output files to the final workflow
+        expand("data/tajima/{ID}.Tajima.D", ID=all_ids)  # Add Tajima's D output files to the final workflow
 
 rule run_slim_simulation:
     input:
@@ -39,7 +39,7 @@ rule run_tajima:
     input:
         vcf_file="data/vcf/{ID}.vcf"
     output:
-        tajima_output="data/tajima/{ID}.TajimaD"
+        tajima_output="data/tajima/{ID}.Tajima.D"
     shell:
         """
         vcftools --vcf {input.vcf_file} --out {output.tajima_output} --TajimaD 100
