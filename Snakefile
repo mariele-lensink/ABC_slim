@@ -36,7 +36,9 @@ rule run_tajima:
         vcf_file="data/vcf/{ID}.vcf"
     output:
         tajima_output="data/tajima/{ID}.Tajima.D"
+    params:
+        out_prefix=lambda wildcards: f"data/tajima/{wildcards.ID}"
     shell:
         """
-        vcftools --vcf {input.vcf_file} --out {output.tajima_output} --TajimaD 100
+        vcftools --vcf {input.vcf_file} --out {params.out_prefix} --TajimaD 100
         """
