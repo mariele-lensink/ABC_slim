@@ -33,9 +33,9 @@ rule run_slim_simulation:
         """)
 rule run_tajima:
     input:
-        vcf_file="data/vcf/data/vcf/{ID:\d+}.vcf"
+        vcf_file="data/vcf/{ID:\d+}.vcf"
     output:
-        tajima_output="data/tajima/{ID}"
+        tajima_output="data/tajima/{ID}.Tajima.D"
     shell:
         """
         vcftools --vcf {input.vcf_file} --out {output.tajima_output} --TajimaD 100
