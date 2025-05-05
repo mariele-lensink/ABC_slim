@@ -23,7 +23,7 @@ rule run_slim_simulation:
     run:
         import pandas as pd
         params = pd.read_csv(input.param_file)
-        row = params.loc[params["ID"] == int(wildcards.ID)].squeeze()
+        row = params.loc[params["ID"].astype(str) == str(wildcards.ID)].squeeze()
         id_int = int(row.ID)
 
         shell(f"""
