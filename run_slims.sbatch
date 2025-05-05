@@ -5,7 +5,7 @@
 #SBATCH -J abc_slim
 #SBATCH -t 22-00:00:00
 #SBATCH --mem 50G
-#SBATCH --ntasks=100
+#SBATCH --ntasks=200
 #SBATCH --cpus-per-task=1
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmh
@@ -20,8 +20,8 @@ conda activate slimsims
 Rscript /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/generate_parameters.R
 snakemake --snakefile Snakefile \
 	  --configfile config.yaml \
-	  --jobs 100\
-	  --cores 100 \
+	  --jobs 200\
+	  --cores 200 \
 	  --latency-wait 60 \
           --rerun-incomplete \
           --keep-going
