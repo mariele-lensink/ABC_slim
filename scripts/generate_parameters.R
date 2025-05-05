@@ -6,7 +6,7 @@ library(parallel)
 set.seed(as.integer(Sys.time()))
 
 # Generate 100,000 unique IDs and random parameters
-num_simulations <- 10000
+num_simulations <- 10
 log_uniform <- function(n, min, max) 10^runif(n, log10(min), log10(max))
 log_uniform_neg <- function(n, min_abs, max_abs) -10^runif(n, log10(min_abs), log10(max_abs))
 

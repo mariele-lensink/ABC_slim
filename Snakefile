@@ -11,7 +11,7 @@ all_ids = all_params["ID"].tolist()
 
 rule all:
     input:
-        expand("data/vcf/{ID}.vcf", ID=all_ids),
+       # expand("data/vcf/{ID}.vcf", ID=all_ids),
         expand("data/tajima/{ID}.Tajima.D", ID=all_ids) 
 
 rule run_slim_simulation:
