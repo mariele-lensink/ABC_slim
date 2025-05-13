@@ -3,7 +3,7 @@
 #SBATCH -o /home/mlensink/slurm-log/abcslim_stdout-%j.txt
 #SBATCH -e /home/mlensink/slurm-log/abcslim_stderr-%j.txt
 #SBATCH -J abc_slim
-#SBATCH -t 22-00:00:00
+#SBATCH -t 4-00:00:00
 #SBATCH --mem 50G
 #SBATCH --ntasks=200
 #SBATCH --cpus-per-task=1
@@ -22,7 +22,7 @@ snakemake --snakefile Snakefile \
 	  --configfile config.yaml \
 	  --jobs 200\
 	  --cores 200 \
-	  --latency-wait 60 \
+	  --latency-wait 30 \
           --rerun-incomplete \
           --keep-going
 
