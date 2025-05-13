@@ -11,7 +11,7 @@ log_uniform <- function(n, min, max) 10^runif(n, log10(min), log10(max))
 log_uniform_neg <- function(n, min_abs, max_abs) -10^runif(n, log10(min_abs), log10(max_abs))
 
 params <- data.table(
-  ID = 10001:10001+num_simulations,
+  ID = 10001:(10001 + num_simulations - 1),
   gmu = log_uniform(num_simulations, 3e-8, 5.3e-5),
   imu = log_uniform(num_simulations, 3e-8, 5.3e-6),
   gd = runif(num_simulations,0.1,0.7),
