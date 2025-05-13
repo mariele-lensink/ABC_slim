@@ -22,15 +22,24 @@ rule run_slim_simulation:
     log: "logs/{ID}.log"
     run:
         import pandas as pd
+        import os 
+
         params = pd.read_csv(input.param_file)
         row = params.loc[params["ID"].astype(str) == str(wildcards.ID)].squeeze()
         id_int = int(row.ID)
 
-        shell(f"""
-            slim -d ID={id_int} -d gmu={row.gmu} -d imu={row.imu} \
-                 -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
-                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log}
-        """)
+        try:
+            shell(f"""
+                slim -d ID={id_int} -d gmu={row.gmu} -d imu={row.imu} \
+                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
+                   /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log}
+            """)
+            if not os.path.exists(output.sim_output):
+                raise RuntimeError("SLiM did not produce output VCF")
+        except:
+            with open("failed_ids.txt", "a") as f:
+                f.write(f"{wildcards.ID}\n")
+
 rule run_tajima:
     input:
         vcf_file="data/vcf/{ID}.vcf"
@@ -38,7 +47,11 @@ rule run_tajima:
         tajima_output="data/tajima/{ID}.Tajima.D"
     params:
         out_prefix=lambda wildcards: f"data/tajima/{wildcards.ID}"
-    shell:
-        """
-        vcftools --vcf {input.vcf_file} --out {params.out_prefix} --TajimaD 100
-        """
+    run:
+        import os
+        if not os.path.exists(input.vcf_file):
+            print(f"Skipping {input.vcf_file}: file does not exist.")
+        else:
+            shell("""
+                vcftools --vcf {input.vcf_file} --out {params.out_prefix} --TajimaD 100
+            """)
