@@ -1,2 +1,2 @@
-param_file: "/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters2_failtest.csv"
+param_file: "/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters3_20k-50k.csv"
 slim_script: "/home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim"
