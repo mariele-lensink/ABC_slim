@@ -23,7 +23,6 @@ snakemake --snakefile Snakefile \
 	  --jobs 400\
 	  --cores 400 \
 	  --latency-wait 60 \
-          --rerun-incomplete \
-          --keep-going
+      --keep-going
 
 
