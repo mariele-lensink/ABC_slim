@@ -22,7 +22,6 @@ snakemake --snakefile Snakefile \
 	  --configfile config.yaml \
 	  --jobs 400\
 	  --cores 400 \
-	  --latency-wait 60 \
-      --keep-going
-
-
+	  --latency-wait 30 \
+      --keep-going \
+	--max-inventory-time 0

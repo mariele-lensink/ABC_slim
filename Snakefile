@@ -19,26 +19,36 @@ rule run_slim_simulation:
         param_file = params_file
     output:
         sim_output = "data/vcf/{ID}.vcf"
-    log: "logs/{ID}.log"
+    log:
+        "logs/slim/{ID}.log"
+    resources:
+       # mem_mb = 16000  # optional, if you later switch to cluster mode
+        #restart_times: 1
     run:
         import pandas as pd
-        import os 
+        import os
 
+        # Load parameters and extract the row for this ID
         params = pd.read_csv(input.param_file)
         row = params.loc[params["ID"].astype(str) == str(wildcards.ID)].squeeze()
-        id_int = int(row.ID)
 
-        try:
-            shell(f"""
-                slim -d ID={id_int} -d gmu={row.gmu} -d imu={row.imu} \
-                  -d gd={row.gd} -d id={row.id} -d gdfe={row.gdfe} -d idfe={row.idfe} \
-                   /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log}
-            """)
-            if not os.path.exists(output.sim_output):
-                raise RuntimeError("SLiM did not produce output VCF")
-        except:
-            with open("failed_ids.txt", "a") as f:
-                f.write(f"{wildcards.ID}\n")
+        shell("""
+            slim -d ID={row.ID} \
+                 -d gmu={row.gmu} \
+                 -d imu={row.imu} \
+                 -d gd={row.gd} \
+                 -d id={row.id} \
+                 -d gdfe={row.gdfe} \
+                 -d idfe={row.idfe} \
+                 /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log} 2>&1
+        """)
+
+        # Check if output was produced
+        if not os.path.exists(output.sim_output):
+            # Optional: mark this job as failed
+            with open(f"logs/failed/{wildcards.ID}.fail", "w") as f:
+                f.write("SLiM failed to produce output.\n")
+            raise ValueError(f"SLiM failed for ID {wildcards.ID}")
 
 rule run_tajima:
     input:
