@@ -43,7 +43,7 @@ rule run_slim_simulation:
                  -d id={row.id} \
                  -d gdfe={row.gdfe} \
                  -d idfe={row.idfe} \
-                 -d OUT='{scratch_vcf}' \
+                 -d 'OUT="{scratch_vcf}"' \
                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log} 2>&1
 
             cp {scratch_vcf} {output.sim_output}
