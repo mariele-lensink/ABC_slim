@@ -37,13 +37,13 @@ rule run_slim_simulation:
 
         shell(f"""
             slim -d ID={wildcards.ID} \
+                 -d JOBID={os.environ['SLURM_JOB_ID']} \
                  -d gmu={row.gmu} \
                  -d imu={row.imu} \
                  -d gd={row.gd} \
                  -d id={row.id} \
                  -d gdfe={row.gdfe} \
                  -d idfe={row.idfe} \
-                 -d 'OUT="{scratch_vcf}"' \
                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log} 2>&1
 
             cp {scratch_vcf} {output.sim_output}
