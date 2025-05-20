@@ -5,8 +5,8 @@
 #SBATCH -J abc_slim
 #SBATCH -t 2-00:00:00
 #SBATCH --mem 400G
-#SBATCH --ntasks=400
-#SBATCH --cpus-per-task=1
+#SBATCH --ntasks=200
+#SBATCH --cpus-per-task=2
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
@@ -20,7 +20,7 @@ conda activate slimsims
 #Rscript /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/generate_parameters.R
 snakemake --snakefile Snakefile \
 	  --configfile config.yaml \
-	  --jobs 400\
+	  --jobs 200\
 	  --cores 400 \
 	  --latency-wait 60 \
       --keep-going 
