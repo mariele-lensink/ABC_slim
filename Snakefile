@@ -14,6 +14,7 @@ rule all:
         expand("data/vcf/{ID}.vcf", ID=all_ids),
         expand("data/tajima/{ID}.Tajima.D", ID=all_ids) 
 
+
 rule run_slim_simulation:
     input:
         param_file = params_file
@@ -28,20 +29,25 @@ rule run_slim_simulation:
         import pandas as pd
         import os
 
-        # Load parameters and extract the row for this ID
         params = pd.read_csv(input.param_file)
-        #row = params.loc[params["ID"].astype(str) == str(wildcards.ID)].squeeze()
         row = params.loc[params["ID"] == int(wildcards.ID)].squeeze()
+        scratch_dir = f"/scratch/mlensink/{os.environ['SLURM_JOB_ID']}"
+        os.makedirs(scratch_dir, exist_ok=True)
+        scratch_vcf = os.path.join(scratch_dir, f"{wildcards.ID}.vcf")
 
-        shell("""
-            slim -d ID={row.ID} \
+        shell(f"""
+            slim -d ID={wildcards.ID} \
                  -d gmu={row.gmu} \
                  -d imu={row.imu} \
                  -d gd={row.gd} \
                  -d id={row.id} \
                  -d gdfe={row.gdfe} \
                  -d idfe={row.idfe} \
+                 -d OUT='{scratch_vcf}' \
                  /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim > {log} 2>&1
+
+            cp {scratch_vcf} {output.sim_output}
+            rm -f {scratch_vcf}
         """)
 
         # Check if output was produced
