@@ -4,8 +4,8 @@
 #SBATCH --output=logs/slim_array_%A_%a.out
 #SBATCH --error=logs/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=6G
-#SBATCH --time=2-00:00:00
+#SBATCH --mem=1G
+#SBATCH --time=1-00:00:00
 #SBATCH --partition=bmm
 #SBATCH --account=gmonroegrp
 #SBATCH --mail-type=FAIL
