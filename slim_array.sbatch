@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --array=0-49999%200               # 50k jobs, 200 concurrent
+#SBATCH --array=1-49999%200               # 50k jobs, 200 concurrent
 #SBATCH --job-name=slim_array
 #SBATCH --output=logs/slim_array_%A_%a.out
 #SBATCH --error=logs/slim_array_%A_%a.err
