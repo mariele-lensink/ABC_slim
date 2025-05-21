@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --array=1-49999%200               # 50k jobs, 200 concurrent
+#SBATCH --array=1-50000%200               # 50k jobs, 200 concurrent
 #SBATCH --job-name=slim_array
 #SBATCH --output=logs/slim_array_%A_%a.out
 #SBATCH --error=logs/slim_array_%A_%a.err
@@ -76,7 +76,7 @@ if [[ -f "$SCRATCH_VCF" ]]; then
 fi
 
 # If last task in array, aggregate failed IDs and clean up
-if [[ $SLURM_ARRAY_TASK_ID -eq 49999 ]]; then
+if [[ $SLURM_ARRAY_TASK_ID -eq 50000 ]]; then
     echo "Aggregating failure logs..."
     mkdir -p logs/failed
     cat logs/failed/tmp/*.fail > logs/failed/slim_failed_ids.txt
