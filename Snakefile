@@ -31,14 +31,15 @@ rule run_slim_simulation:
 
         params = pd.read_csv(input.param_file)
         row = params.loc[params["ID"] == int(wildcards.ID)].squeeze()
-        scratch_dir = f"/scratch/mlensink/{os.environ.get('SLURM_JOB_ID', 'debug')}"
+        jobid = os.environ.get("SLURM_JOB_ID", "debug")
+        scratch_dir = f"/scratch/mlensink/{jobid}"
         os.makedirs(scratch_dir, exist_ok=True)
         scratch_vcf = os.path.join(scratch_dir, f"{wildcards.ID}.vcf")
         print("Writing to scratch dir:", scratch_dir)
 
         shell(f"""
             slim -d ID={wildcards.ID} \
-                 -d JOBID={os.environ['SLURM_JOB_ID']} \
+                 -d JOBID={jobid} \
                  -d gmu={row.gmu} \
                  -d imu={row.imu} \
                  -d gd={row.gd} \
