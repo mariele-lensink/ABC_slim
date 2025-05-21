@@ -25,18 +25,18 @@ IFS=',' read -r ID gmu imu gd id gdfe idfe <<< "$data"
 SCRATCH_DIR="/scratch/mlensink/$SLURM_JOB_ID"
 mkdir -p "$SCRATCH_DIR"
 SCRATCH_VCF="$SCRATCH_DIR/${ID}.vcf"
+SCRATCH_VCF_GZ="$SCRATCH_DIR/${ID}.vcf.gz"
 
-VCF_OUT="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf"
 TAJIMA_OUT="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID}.Tajima.D"
 
 # CASE 1: Tajima exists but VCF doesn't → both must be redone
-if [[ ! -f "$VCF_OUT" && -f "$TAJIMA_OUT" ]]; then
+if [[ ! -f "$SCRATCH_VCF" && -f "$TAJIMA_OUT" ]]; then
     echo "Tajima D exists but VCF is missing for ID $ID. Deleting Tajima file and rerunning both."
     rm -f "$TAJIMA_OUT"
 fi
 
-# CASE 2: VCF missing → run SLiM
-if [[ ! -f "$VCF_OUT" ]]; then
+# Run SLiM if scratch VCF missing
+if [[ ! -f "$SCRATCH_VCF" ]]; then
     echo "VCF missing for ID $ID. Running SLiM."
     slim -d ID=$ID \
          -d JOBID=$SLURM_JOB_ID \
@@ -48,27 +48,31 @@ if [[ ! -f "$VCF_OUT" ]]; then
          -d idfe=$idfe \
          /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim
 
-    if [[ -f "$SCRATCH_VCF" ]]; then
-        cp "$SCRATCH_VCF" "$VCF_OUT"
-        rm -f "$SCRATCH_VCF"
-    else
+    if [[ ! -f "$SCRATCH_VCF" ]]; then
         echo "SLiM failed to produce output for ID $ID. Logging failure."
         mkdir -p logs/failed/tmp
         echo "$ID" > logs/failed/tmp/${ID}.fail
         exit 1
     fi
 else
-    echo "VCF already exists for ID $ID. Skipping SLiM."
+    echo "VCF already exists for ID $ID in scratch. Skipping SLiM."
 fi
 
-# CASE 3: Tajima missing → run it
+# Run TajimaD if output is missing
 if [[ ! -f "$TAJIMA_OUT" ]]; then
     echo "Tajima D missing for ID $ID. Running vcftools."
-    vcftools --vcf "$VCF_OUT" \
+    vcftools --vcf "$SCRATCH_VCF" \
              --out "/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID}" \
              --TajimaD 100
 else
     echo "Tajima D already exists for ID $ID. Skipping."
+fi
+
+# Compress VCF and copy to permanent storage
+if [[ -f "$SCRATCH_VCF" ]]; then
+    echo "Compressing and storing VCF for ID $ID."
+    bgzip -c "$SCRATCH_VCF" > "/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf.gz"
+    rm -f "$SCRATCH_VCF"
 fi
 
 # If last task in array, aggregate failed IDs and clean up
