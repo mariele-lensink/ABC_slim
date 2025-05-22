@@ -50,4 +50,4 @@ results <- mclapply(tajima_files, process_file, mc.cores = no_cores)
 
 # Combine all results into one data.table
 final_stats <- rbindlist(results)
-fwrite(final_stats, "sim_tajima_stats_5.7.2025.csv")
+fwrite(final_stats, "sim_tajima_stats_5.21.2025.csv")
