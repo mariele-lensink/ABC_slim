@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --array=0-49999%200               # 50k jobs, 200 concurrent
+#SBATCH --array=0-49999%100               # 50k jobs, 200 concurrent
 #SBATCH --job-name=slim_array
 #SBATCH --output=logs/slim_array_%A_%a.out
 #SBATCH --error=logs/slim_array_%A_%a.err
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=1G
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=2G
 #SBATCH --time=1-00:00:00
-#SBATCH --partition=bmm
+#SBATCH --partition=bmh
 #SBATCH --account=gmonroegrp
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
@@ -16,28 +16,33 @@ conda activate slimsims
 
 # Load the line corresponding to this task from the parameter file
 PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters3_20k-50k.csv"
-LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  # Now that we start at line 2, task ID maps directly to the data line
-
+LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  
+# Now that we start at line 2, task ID maps directly to the data line
 data=$(sed -n "${LINE}p" $PARAM_FILE)
 
 IFS=',' read -r ID gmu imu gd id gdfe idfe <<< "$data"
 
 # Set up scratch dir
-SCRATCH_DIR="/scratch/mlensink/$SLURM_JOB_ID"
+SCRATCH_DIR="/scratch/mlensink/$SLURM_JOB_ID_${SLURM_ARRAY_TASK_ID}"
 mkdir -p "$SCRATCH_DIR"
 SCRATCH_VCF="$SCRATCH_DIR/${ID}.vcf"
 SCRATCH_VCF_GZ="$SCRATCH_DIR/${ID}.vcf.gz"
+SLIM_LOG="$SCRATCH_DIR/${ID}.slim.log"
+
 
 TAJIMA_OUT="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID}.Tajima.D"
+FINAL_VCF="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf.gz"
+FINAL_VCF_uncompressed="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf"
+
 
 # CASE 1: Tajima exists but VCF doesn't → both must be redone
-if [[ ! -f "$SCRATCH_VCF" && -f "$TAJIMA_OUT" ]]; then
+if [[ ! -f "$SCRATCH_VCF" && ! -f "$FINAL_VCF_uncompressed"&& ! -f "$FINAL_VCF" && -f "$TAJIMA_OUT" ]]; then
     echo "Tajima D exists but VCF is missing for ID $ID. Deleting Tajima file and rerunning both."
     rm -f "$TAJIMA_OUT"
 fi
 
-# Run SLiM if scratch VCF missing
-if [[ ! -f "$SCRATCH_VCF" ]]; then
+# Run SLiM if VCF missing
+if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_uncompressed" ]]; then
     echo "VCF missing for ID $ID. Running SLiM."
     slim -d ID=$ID \
          -d JOBID=$SLURM_JOB_ID \
@@ -47,7 +52,8 @@ if [[ ! -f "$SCRATCH_VCF" ]]; then
          -d id=$id \
          -d gdfe=$gdfe \
          -d idfe=$idfe \
-         /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim
+         /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim \
+         > "$SCRATCH_VCF" 2> "$SLIM_LOG"
 
     if [[ ! -f "$SCRATCH_VCF" ]]; then
         echo "SLiM failed to produce output for ID $ID. Logging failure."
@@ -72,8 +78,11 @@ fi
 # Compress VCF and copy to permanent storage
 if [[ -f "$SCRATCH_VCF" ]]; then
     echo "Compressing and storing VCF for ID $ID."
-    bgzip -c "$SCRATCH_VCF" > "/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf.gz"
-    rm -f "$SCRATCH_VCF"
+    bgzip -c "$SCRATCH_VCF">"$FINAL_VCF"
+    # Save SLiM log file to permanent logs directory
+    mkdir -p /home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs
+    cp "$SLIM_LOG" "/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs/${ID}.slim.log"
+    rm -rf "$SCRATCH_DIR"
 fi
 
 # If last task in array, aggregate failed IDs and clean up
