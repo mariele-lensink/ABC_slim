@@ -14,6 +14,9 @@
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate slimsims
 
+echo "SLURM_JOB_ID=$SLURM_JOB_ID"
+echo "SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID"
+
 # Load the line corresponding to this task from the parameter file
 PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters3_20k-50k.csv"
 LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  
@@ -23,7 +26,7 @@ data=$(sed -n "${LINE}p" $PARAM_FILE)
 IFS=',' read -r ID gmu imu gd id gdfe idfe <<< "$data"
 
 # Set up scratch dir
-SCRATCH_DIR="/scratch/mlensink/$SLURM_JOB_ID_${SLURM_ARRAY_TASK_ID}"
+SCRATCH_DIR="/scratch/mlensink/${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 mkdir -p "$SCRATCH_DIR"
 SCRATCH_VCF="$SCRATCH_DIR/${ID}.vcf"
 SCRATCH_VCF_GZ="$SCRATCH_DIR/${ID}.vcf.gz"
