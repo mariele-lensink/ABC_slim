@@ -52,7 +52,9 @@ process_file <- function(file_path) {
 # Use mclapply to run in parallel
 no_cores <- detectCores() - 1  # Leave one core free
 results <- mclapply(tajima_files, process_file, mc.cores = no_cores)
+results <- Filter(Negate(is.null), results)  # remove NULLs before binding
 
 # Combine all results into one data.table
 final_stats <- rbindlist(results)
-fwrite(final_stats, "sim_tajima_stats_5.7.2025.csv")
+fwrite(final_stats, "sim_tajima_stats_5.7.2025.filtered.csv")
+
