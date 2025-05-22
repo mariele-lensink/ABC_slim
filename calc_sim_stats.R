@@ -1,7 +1,7 @@
 library(data.table)
 library(parallel)
 
-#ene windows created from TAIR 10 gff for CHROM 5 first 100 genes same as sim
+#gene windows created from TAIR 10 gff for CHROM 5 first 100 genes same as sim
 genes<-fread("1001info/gene100.csv")
 colnames(genes)<-c("start","stop","V3")
 setkey(genes,start,stop)
@@ -16,6 +16,7 @@ tajima_dir<-"/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/"
 tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
 
 process_file <- function(file_path) {
+  library(data.table)
   # Read Tajima's D data
   tajima <- data.table::fread(file_path)
   tajima[, START := BIN_START]
