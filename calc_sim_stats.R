@@ -15,14 +15,9 @@ tajima_dir<-"/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/"
 # Get all Tajima's D files
 tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
 
-# Optionally exclude files modified in the last 2 minutes
-tajima_files <- tajima_files[
-  Sys.time() - file.info(tajima_files)$mtime > 120
-]
-
 process_file <- function(file_path) {
   # Read Tajima's D data
-  tajima <- fread(file_path)
+  tajima <- data.table::fread(file_path)
   tajima[, START := BIN_START]
   tajima[, STOP := START + 100]
   tajima[, CHROM := 5]
@@ -55,4 +50,4 @@ results <- mclapply(tajima_files, process_file, mc.cores = no_cores)
 
 # Combine all results into one data.table
 final_stats <- rbindlist(results)
-fwrite(final_stats, "sim_tajima_stats_5.21.2025.csv")
+fwrite(final_stats, "sim_tajima_stats_5.7.2025.csv")
