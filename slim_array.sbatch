@@ -68,15 +68,31 @@ else
     echo "VCF already exists for ID $ID in scratch. Skipping SLiM."
 fi
 
+# Prefer scratch VCF if available
+if [[ -f "$SCRATCH_VCF" ]]; then
+    echo "Using VCF from scratch for ID $ID."
+    VCFCMD="vcftools --vcf $SCRATCH_VCF"
+elif [[ -f "$FINAL_VCF_uncompressed" ]]; then
+    echo "Using uncompressed VCF from data/vcf for ID $ID."
+    VCFCMD="vcftools --vcf $FINAL_VCF_uncompressed"
+elif [[ -f "$FINAL_VCF" ]]; then
+    echo "Using compressed VCF from data/vcf (streaming) for ID $ID."
+    VCFCMD="gunzip -c $FINAL_VCF | vcftools --vcf -"
+else
+    echo "ERROR: No VCF file found for ID $ID. Cannot run TajimaD."
+    mkdir -p logs/failed/tmp
+    echo "$ID" > logs/failed/tmp/${ID}.fail
+    exit 1
+fi
+
 # Run TajimaD if output is missing
 if [[ ! -f "$TAJIMA_OUT" ]]; then
-    echo "Tajima D missing for ID $ID. Running vcftools."
-    vcftools --vcf "$SCRATCH_VCF" \
-             --out "/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID}" \
-             --TajimaD 100
+    echo "Running Tajima D for ID $ID."
+    eval "$VCFCMD --out /home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID} --TajimaD 100"
 else
     echo "Tajima D already exists for ID $ID. Skipping."
 fi
+
 
 # Compress VCF and copy to permanent storage
 if [[ -f "$SCRATCH_VCF" ]]; then
