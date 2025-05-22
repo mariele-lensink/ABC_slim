@@ -13,7 +13,7 @@ setkey(intergenes,start,stop)
 #tajima directory
 tajima_dir<-"/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/"
 # Get all Tajima's D files
-#tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
+tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
 
 # Optionally exclude files modified in the last 2 minutes
 tajima_files <- tajima_files[
