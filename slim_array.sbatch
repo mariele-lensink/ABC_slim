@@ -18,7 +18,7 @@ echo "SLURM_JOB_ID=$SLURM_JOB_ID"
 echo "SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID"
 
 # Load the line corresponding to this task from the parameter file
-PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters3_20k-50k.csv"
+PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters4_leftover_20k-70k.csv"
 LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  
 # Now that we start at line 2, task ID maps directly to the data line
 data=$(sed -n "${LINE}p" $PARAM_FILE)
@@ -56,7 +56,7 @@ if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_uncompressed" ]]; then
          -d gdfe=$gdfe \
          -d idfe=$idfe \
          /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim \
-         > "$SCRATCH_VCF" 2> "$SLIM_LOG"
+         > "$SLIM_LOG" 2>&1
 
     if [[ ! -f "$SCRATCH_VCF" ]]; then
         echo "SLiM failed to produce output for ID $ID. Logging failure."
