@@ -4,7 +4,7 @@
 #SBATCH --output=logs/slim_array_%A_%a.out
 #SBATCH --error=logs/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=2G
+#SBATCH --mem=4G
 #SBATCH --time=1-00:00:00
 #SBATCH --partition=bmh
 #SBATCH --account=gmonroegrp
@@ -25,27 +25,21 @@ data=$(sed -n "${LINE}p" $PARAM_FILE)
 
 IFS=',' read -r ID gmu imu gd id gdfe idfe <<< "$data"
 
-# Set up scratch dir
-SCRATCH_DIR="/scratch/mlensink/${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
-mkdir -p "$SCRATCH_DIR"
-SCRATCH_VCF="$SCRATCH_DIR/${ID}.vcf"
-SCRATCH_VCF_GZ="$SCRATCH_DIR/${ID}.vcf.gz"
-SLIM_LOG="$SCRATCH_DIR/${ID}.slim.log"
-
 
 TAJIMA_OUT="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID}.Tajima.D"
-FINAL_VCF="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf.gz"
-FINAL_VCF_uncompressed="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf"
+FINAL_VCF="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf"
+FINAL_VCF_GZ="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf.gz"
+SLIM_LOG="/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs/${ID}.slim.log"
 
 
 # CASE 1: Tajima exists but VCF doesn't → both must be redone
-if [[ ! -f "$SCRATCH_VCF" && ! -f "$FINAL_VCF_uncompressed"&& ! -f "$FINAL_VCF" && -f "$TAJIMA_OUT" ]]; then
+if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_GZ" && -f "$TAJIMA_OUT" ]]; then
     echo "Tajima D exists but VCF is missing for ID $ID. Deleting Tajima file and rerunning both."
     rm -f "$TAJIMA_OUT"
 fi
 
 # Run SLiM if VCF missing
-if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_uncompressed" ]]; then
+if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_GZ" ]]; then
     echo "VCF missing for ID $ID. Running SLiM."
     slim -d ID=$ID \
          -d JOBID=$SLURM_JOB_ID \
@@ -56,28 +50,24 @@ if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_uncompressed" ]]; then
          -d gdfe=$gdfe \
          -d idfe=$idfe \
          /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim \
-         > "$SLIM_LOG" 2>&1
+         >> "$SLIM_LOG" 2>&1
 
-    if [[ ! -f "$SCRATCH_VCF" ]]; then
+    if [[ ! -f "$FINAL_VCF" ]]; then
         echo "SLiM failed to produce output for ID $ID. Logging failure."
         mkdir -p logs/failed/tmp
         echo "$ID" > logs/failed/tmp/${ID}.fail
         exit 1
     fi
 else
-    echo "VCF already exists for ID $ID in scratch. Skipping SLiM."
+    echo "VCF already exists for ID $ID . Skipping SLiM."
 fi
 
-# Prefer scratch VCF if available
-if [[ -f "$SCRATCH_VCF" ]]; then
-    echo "Using VCF from scratch for ID $ID."
-    VCFCMD="vcftools --vcf $SCRATCH_VCF"
-elif [[ -f "$FINAL_VCF_uncompressed" ]]; then
+if [[ -f "$FINAL_VCF" ]]; then
     echo "Using uncompressed VCF from data/vcf for ID $ID."
-    VCFCMD="vcftools --vcf $FINAL_VCF_uncompressed"
-elif [[ -f "$FINAL_VCF" ]]; then
+    VCFCMD="vcftools --vcf $FINAL_VCF"
+elif [[ -f "$FINAL_VCF_GZ" ]]; then
     echo "Using compressed VCF from data/vcf (streaming) for ID $ID."
-    VCFCMD="gunzip -c $FINAL_VCF | vcftools --vcf -"
+    VCFCMD="gunzip -c $FINAL_VCF_GZ | vcftools --vcf -"
 else
     echo "ERROR: No VCF file found for ID $ID. Cannot run TajimaD."
     mkdir -p logs/failed/tmp
@@ -95,13 +85,12 @@ fi
 
 
 # Compress VCF and copy to permanent storage
-if [[ -f "$SCRATCH_VCF" ]]; then
+if [[ -f "$FINAL_VCF" ]]; then
     echo "Compressing and storing VCF for ID $ID."
-    bgzip -c "$SCRATCH_VCF">"$FINAL_VCF"
+    bgzip -c "$FINAL_VCF">"$FINAL_VCF_GZ"
     # Save SLiM log file to permanent logs directory
     mkdir -p /home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs
     cp "$SLIM_LOG" "/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs/${ID}.slim.log"
-    rm -rf "$SCRATCH_DIR"
 fi
 
 # If last task in array, aggregate failed IDs and clean up
