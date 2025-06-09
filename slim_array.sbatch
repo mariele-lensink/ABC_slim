@@ -49,8 +49,7 @@ if [[ ! -f "$FINAL_VCF" && ! -f "$FINAL_VCF_GZ" ]]; then
          -d id=$id \
          -d gdfe=$gdfe \
          -d idfe=$idfe \
-         /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim \
-         >> "$SLIM_LOG" 2>&1
+         /home/mlensink/slimsimulations/ABCslim/ABC_slim/scripts/ABC.slim 
 
     if [[ ! -f "$FINAL_VCF" ]]; then
         echo "SLiM failed to produce output for ID $ID. Logging failure."
