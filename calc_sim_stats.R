@@ -56,5 +56,5 @@ results <- Filter(Negate(is.null), results)  # remove NULLs before binding
 
 # Combine all results into one data.table
 final_stats <- rbindlist(results)
-fwrite(final_stats, "sim_tajima_stats_6.25.2025.csv")
+fwrite(final_stats, "sim_tajima_stats_6.30.2025.full.csv")
 
