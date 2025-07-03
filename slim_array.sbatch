@@ -18,7 +18,7 @@ echo "SLURM_JOB_ID=$SLURM_JOB_ID"
 echo "SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID"
 
 # Load the line corresponding to this task from the parameter file
-PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/prior_parameters 100k_7.2.2025.csv"
+PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters_100k_7.2.2025.csv"
 LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  
 # Now that we start at line 2, task ID maps directly to the data line
 data=$(sed -n "${LINE}p" $PARAM_FILE)
