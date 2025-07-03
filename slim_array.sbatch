@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --array=0-49999%200               # 50k jobs, 200 concurrent
 #SBATCH --job-name=slim_array
-#SBATCH --output=logs/slim_array_%A_%a.out
-#SBATCH --error=logs/slim_array_%A_%a.err
+#SBATCH --output=logs/logs_100k/slim_array_%A_%a.out
+#SBATCH --error=logs/logs_100k/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=4G
-#SBATCH --time=3-00:00:00
+#SBATCH --time=4-00:00:00
 #SBATCH --partition=bmh
 #SBATCH --account=gmonroegrp
 #SBATCH --mail-type=FAIL
@@ -18,7 +18,7 @@ echo "SLURM_JOB_ID=$SLURM_JOB_ID"
 echo "SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID"
 
 # Load the line corresponding to this task from the parameter file
-PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/prior_parameters5_leftover_20k-70k.6.11.csv"
+PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/prior_parameters 100k_7.2.2025.csv"
 LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  
 # Now that we start at line 2, task ID maps directly to the data line
 data=$(sed -n "${LINE}p" $PARAM_FILE)
@@ -26,10 +26,9 @@ data=$(sed -n "${LINE}p" $PARAM_FILE)
 IFS=',' read -r ID gmu imu gd id gdfe idfe <<< "$data"
 
 
-TAJIMA_OUT="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID}.Tajima.D"
-FINAL_VCF="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf"
-FINAL_VCF_GZ="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf/${ID}.vcf.gz"
-SLIM_LOG="/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs/${ID}.slim.log"
+TAJIMA_OUT="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima100k/${ID}.Tajima.D"
+FINAL_VCF="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf100k/${ID}.vcf"
+FINAL_VCF_GZ="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/vcf100k/${ID}.vcf.gz"
 
 
 # CASE 1: Tajima exists but VCF doesn't → both must be redone
@@ -77,7 +76,7 @@ fi
 # Run TajimaD if output is missing
 if [[ ! -f "$TAJIMA_OUT" ]]; then
     echo "Running Tajima D for ID $ID."
-    eval "$VCFCMD --out /home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/${ID} --TajimaD 100"
+    eval "$VCFCMD --out /home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima100k/${ID} --TajimaD 100"
 else
     echo "Tajima D already exists for ID $ID. Skipping."
 fi
@@ -87,9 +86,6 @@ fi
 if [[ -f "$FINAL_VCF" ]]; then
     echo "Compressing and storing VCF for ID $ID."
     bgzip -c "$FINAL_VCF">"$FINAL_VCF_GZ"
-    # Save SLiM log file to permanent logs directory
-    mkdir -p /home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs
-    cp "$SLIM_LOG" "/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/slim_logs/${ID}.slim.log"
 fi
 
 # If last task in array, aggregate failed IDs and clean up
