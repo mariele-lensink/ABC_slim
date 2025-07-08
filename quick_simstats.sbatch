@@ -3,9 +3,9 @@
 #SBATCH -o /home/mlensink/slurm-log/quicksimstats_stdout-%j.txt
 #SBATCH -e /home/mlensink/slurm-log/quicksimstats_stderr-%j.txt
 #SBATCH -J abc_simstats
-#SBATCH -t 3-00:00:00
-#SBATCH --mem 100G
-#SBATCH --cpus-per-task=200
+#SBATCH -t 00:30:00
+#SBATCH --mem 50G
+#SBATCH --cpus-per-task=100
 #SBATCH --account=gmonroegrp
 #SBATCH --partition=bmm
 #SBATCH --mail-type=FAIL
