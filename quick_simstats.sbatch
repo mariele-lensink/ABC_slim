@@ -7,7 +7,7 @@
 #SBATCH --mem 100G
 #SBATCH --cpus-per-task=200
 #SBATCH --account=gmonroegrp
-#SBATCH --partition=bmm
+#SBATCH --partition=bmh
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
 
