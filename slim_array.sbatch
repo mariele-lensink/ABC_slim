@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --array=50000-99998%300
+#SBATCH --array=0-49999%350
 #SBATCH --job-name=slim_array
 #SBATCH --output=logs/logs_100k/slim_array_%A_%a.out
 #SBATCH --error=logs/logs_100k/slim_array_%A_%a.err
@@ -17,9 +17,12 @@ conda activate slimsims
 echo "SLURM_JOB_ID=$SLURM_JOB_ID"
 echo "SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID"
 
+# Default OFFSET if not passed in
+: ${OFFSET:=0}
+
 # Load the line corresponding to this task from the parameter file
 PARAM_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/prior_parameters_100k_7.2.2025.csv"
-LINE=$(($SLURM_ARRAY_TASK_ID + 2))  # Skip header and align 0-based index with data lines  
+LINE=$(($SLURM_ARRAY_TASK_ID + $OFFSET + 2))  # Skip header and align 0-based index with data lines  
 # Now that we start at line 2, task ID maps directly to the data line
 data=$(sed -n "${LINE}p" $PARAM_FILE)
 
@@ -89,7 +92,7 @@ if [[ -f "$FINAL_VCF" ]]; then
 fi
 
 # If last task in array, aggregate failed IDs and clean up
-if [[ $SLURM_ARRAY_TASK_ID -eq 99999 ]]; then
+if [[ $SLURM_ARRAY_TASK_ID -eq 49999 ]]; then
     echo "Aggregating failure logs..."
     mkdir -p logs/failed
     cat logs/failed/tmp/*.fail > logs/failed/slim_failed_ids.txt
