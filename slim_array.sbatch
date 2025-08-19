@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --array=0-49999%200               # 50k jobs, 200 concurrent
+#SBATCH --array=50000-99999%350               # 50k jobs, 200 concurrent
 #SBATCH --job-name=slim_array
 #SBATCH --output=logs/logs_100k/slim_array_%A_%a.out
 #SBATCH --error=logs/logs_100k/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=4G
 #SBATCH --time=4-00:00:00
-#SBATCH --partition=bmh
+#SBATCH --partition=bmm
 #SBATCH --account=gmonroegrp
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=melensink@ucdavis.edu
@@ -89,7 +89,7 @@ if [[ -f "$FINAL_VCF" ]]; then
 fi
 
 # If last task in array, aggregate failed IDs and clean up
-if [[ $SLURM_ARRAY_TASK_ID -eq 49999 ]]; then
+if [[ $SLURM_ARRAY_TASK_ID -eq 99999 ]]; then
     echo "Aggregating failure logs..."
     mkdir -p logs/failed
     cat logs/failed/tmp/*.fail > logs/failed/slim_failed_ids.txt
