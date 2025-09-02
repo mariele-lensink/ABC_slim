@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=slim_array
-#SBATCH --array=0-49998%300
+#SBATCH --array=0-49998%350
 #SBATCH --output=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.out
 #SBATCH --error=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=4G
-#SBATCH --time=4-00:00:00
+#SBATCH --time=5-00:00:00
 #SBATCH --partition=bmm
 #SBATCH --account=gmonroegrp
 #SBATCH --mail-type=FAIL
