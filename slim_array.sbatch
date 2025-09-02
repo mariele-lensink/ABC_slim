@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --export=ALL
+#SBATCH --get-user-env=never
 #SBATCH --job-name=slim_array
 #SBATCH --output=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.out
 #SBATCH --error=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.err
