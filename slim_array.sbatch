@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --array=0-49999%350
+#SBATCH --array=0-9999%350
 #SBATCH --job-name=slim_array
-#SBATCH --output=logs/logs_100k_2/slim_array_%A_%a.out
-#SBATCH --error=logs/logs_100k_2/slim_array_%A_%a.err
+#SBATCH --output=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.out
+#SBATCH --error=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=4G
 #SBATCH --time=4-00:00:00
@@ -95,7 +95,7 @@ fi
 if [[ $SLURM_ARRAY_TASK_ID -eq 49999 ]]; then
     echo "Aggregating failure logs..."
     mkdir -p logs/failed
-    cat logs/failed/tmp/*.fail > logs/failed/slim_failed_ids.txt
+    cat logs/failed/tmp/*.fail > /home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/failed/slim_failed_ids.txt
     rm -f logs/failed/tmp/*.fail
     rmdir logs/failed/tmp
 fi
