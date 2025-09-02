@@ -2,29 +2,24 @@
 set -euo pipefail
 
 SBATCH_FILE="/home/mlensink/slimsimulations/ABCslim/ABC_slim/slim_array.sbatch"
-WAVE_SIZE=10000                 # tasks per wave (matches 0..9999 in your script)
-CONCURRENCY=350                 # percent after the array range
-SUBMIT_CAP=50000                # from sacctmgr
-BUFFER=1000                     # keep a little headroom
 
-submit_wave () {
-  local offset="$1"
-  local array_hi=$((WAVE_SIZE-1))
-  echo "Submitting OFFSET=$offset  array=0-${array_hi}%${CONCURRENCY}"
-  sbatch --export=ALL,OFFSET="$offset" --array="0-${array_hi}%${CONCURRENCY}" "$SBATCH_FILE"
+submit () {
+  local offset=$1
+  local array=$2
+  echo "Submitting OFFSET=$offset  array=$array%350"
+  sbatch --export=ALL,OFFSET="$offset" --array="$array%350" "$SBATCH_FILE"
 }
 
-# Simple loop: wait until current jobs + new wave < cap, then submit
-for OFFSET in 50000 60000 70000 80000 90000; do
-  need=$WAVE_SIZE
-  while true; do
-    cur=$(squeue -u "$USER" -h | wc -l)
-    if (( cur + need < SUBMIT_CAP - BUFFER )); then
-      submit_wave "$OFFSET"
-      break
-    fi
-    sleep 10
-  done
-done
+# Waves of 10k each (0-9999)
+submit 50000 "0-9999"
+submit 60000 "0-9999"
+submit 70000 "0-9999"
+submit 80000 "0-9999"
 
-echo "All waves submitted."
+# Last big wave trimmed to 9,999 tasks (0-9998)
+#submit 90000 "0-9998"
+
+# Reminder: one straggler left (OFFSET=99999)
+echo
+echo ">>> When you have queue headroom, submit the final single task with:"
+echo "sbatch --export=ALL,OFFSET=99999 --array=0-0%350 $SBATCH_FILE"
