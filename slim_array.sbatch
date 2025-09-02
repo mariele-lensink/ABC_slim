@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=slim_array
-#SBATCH --array=50000-59999%350
+#SBATCH --array=0-39999%350
 #SBATCH --output=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.out
 #SBATCH --error=/home/mlensink/slimsimulations/ABCslim/ABC_slim/logs/logs_100k_2/slim_array_%A_%a.err
 #SBATCH --cpus-per-task=2
