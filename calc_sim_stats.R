@@ -11,7 +11,7 @@ colnames(intergenes)<-c("start","stop","V3")
 setkey(intergenes,start,stop)
 
 #tajima directory
-tajima_dir<-"/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima/"
+tajima_dir<-"/home/mlensink/slimsimulations/ABCslim/ABC_slim/data/tajima100k/"
 # Get all Tajima's D files
 tajima_files <- list.files(tajima_dir, pattern = "\\.Tajima\\.D$", full.names = TRUE)
 
@@ -56,5 +56,5 @@ results <- Filter(Negate(is.null), results)  # remove NULLs before binding
 
 # Combine all results into one data.table
 final_stats <- rbindlist(results)
-fwrite(final_stats, "sim_tajima_stats_7.8.2025.addon.csv")
+fwrite(final_stats, "sim_tajima_stats_8.5.25_1.csv")
 
